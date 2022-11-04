@@ -1,11 +1,6 @@
 var express = require('express');
 var router = express.Router();
 
-const { default: mongoose } = require('mongoose');
-const { Category } = require('../models');
-
-mongoose.connect('mongodb://127.0.0.1:27017/BasicDBecommerce');
-
 let dataCategories = [
   {
     id: 1,
@@ -36,15 +31,7 @@ let dataCategories = [
 
 /* GET list dataCategories. */
 router.get('/', function (req, res, next) {
-  try {
-    Category.find().then((result) => {
-      res.send(result);
-      // console.log(result);
-    });
-  } catch (error) {
-    // console.log(error);
-    res.sendStatus(500);
-  }
+  res.send(dataCategories);
 });
 
 /* GET item at dataCategories. */
@@ -53,15 +40,16 @@ router.get('/:id', function (req, res, next) {
     next();
     return;
   }
-  try {
-    const { id } = req.params;
-    Category.findById(id).then((result) => {
-      // console.log(result);
-      res.send(result);
-    });
-  } catch (error) {
-    console.log(error);
-    res.sendStatus(500);
+  const getID = parseInt(req.params.id); //'/:id' đặt tên ở đây như thế nào thì gọi req.param.id như thế
+  const found = dataCategories.find((x) => {
+    return x.id === getID;
+  });
+  if (found) {
+    res.send(found);
+    return;
+  } else {
+    res.status(404).send("Can't find category");
+    return;
   }
 });
 
@@ -76,47 +64,33 @@ router.get('/search', function (req, res, next) {
 
 /* POST insert item at dataCategories. */
 router.post('/', function (req, res, next) {
-  try {
-    const data = req.body;
-    const newItem = new Category(data);
-    newItem.save().then((result) => {
-      // console.log(result);
-      res.send(result);
-    });
-  } catch (err) {
-    console.log(err);
-    res.sendStatus(500);
-  }
+  const newCategory = req.body;
+  dataCategories.push(newCategory);
+  res.status(201).send({ message: 'Insert item category success' });
 });
 
 /* PATCH updated item at dataCategories. */
 router.patch('/:id', (req, res, next) => {
-  try {
-    const { id } = req.params;
-    const data = req.body;
-    Category.findByIdAndUpdate(id, data, {
-      new: true,
-    }).then((result) => {
-      res.send(result);
-    });
-  } catch (error) {
-    console.log(error);
-    res.sendStatus(500);
-  }
+  const { id } = req.params;
+  const { name, description } = req.body;
+
+  let found = dataCategories.find((x) => {
+    return (x.id = parseInt(id));
+  });
+
+  found.name = name;
+  found.description = description;
+
+  res.send({ message: 'Updated is success' });
 });
 
 /* DELETE remove item at dataCategories. */
 router.delete('/:id', function (req, res, next) {
-  try {
-    const { id } = req.params;
-    Category.findByIdAndDelete(id).then((result) => {
-      // console.log(result);
-      res.send(result);
-    });
-  } catch (err) {
-    console.log(err);
-    res.sendStatus(500);
-  }
+  const getID = req.params.id;
+  dataCategories = dataCategories.filter((x) => x.id !== parseInt(getID));
+
+  console.log(getID);
+  res.status(202).send({ message: 'Deleted success' });
 });
 
 module.exports = router;
