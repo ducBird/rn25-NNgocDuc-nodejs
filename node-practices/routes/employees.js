@@ -2,14 +2,14 @@ var express = require('express');
 var router = express.Router();
 
 const { default: mongoose } = require('mongoose');
-const { Customer } = require('../models');
+const { Employee } = require('../models');
 
 mongoose.connect('mongodb://127.0.0.1:27017/BasicDBecommerce');
 
-/* GET data Customers. */
+/* GET data Employees. */
 router.get('/', function (req, res, next) {
   try {
-    Customer.find().then((result) => {
+    Employee.find().then((result) => {
       res.send(result);
     });
   } catch (error) {
@@ -18,7 +18,7 @@ router.get('/', function (req, res, next) {
   }
 });
 
-// GET data Customer
+// GET data Employee
 router.get('/:id', function (req, res, next) {
   const getId = req.params.id;
   if (getId === 'search') {
@@ -28,7 +28,7 @@ router.get('/:id', function (req, res, next) {
   try {
     // const id = '636404585452ff76b963e61d';
     const id = req.params.id;
-    Customer.findById(id).then((result) => {
+    Employee.findById(id).then((result) => {
       // console.log(result);
       res.send(result);
       return;
@@ -40,18 +40,18 @@ router.get('/:id', function (req, res, next) {
   }
 });
 
-// Search Customer
+// Search Employee
 router.get('/search', (req, res, next) => {
   const { id, firstName, lastName } = req.query;
   console.log(`id: ${id}`);
   res.send('OK query string');
 });
 
-//Insert Customer
+//Insert Employee
 router.post('/', (req, res, next) => {
   try {
     const data = req.body;
-    const newItem = new Customer(data);
+    const newItem = new Employee(data);
     newItem.save().then((result) => {
       res.send(result);
       return;
@@ -62,12 +62,12 @@ router.post('/', (req, res, next) => {
   }
 });
 
-//Update Customer
+//Update Employee
 router.patch('/:id', (req, res, next) => {
   try {
     const id = req.params.id;
     const data = req.body;
-    Customer.findByIdAndUpdate(id, data, {
+    Employee.findByIdAndUpdate(id, data, {
       new: true,
     }).then((result) => {
       // console.log(result);
@@ -81,11 +81,11 @@ router.patch('/:id', (req, res, next) => {
   }
 });
 
-//Remove Customer
+//Remove Employee
 router.delete('/:id', (req, res, next) => {
   try {
     const { id } = req.params;
-    Customer.findByIdAndDelete(id).then((result) => {
+    Employee.findByIdAndDelete(id).then((result) => {
       res.send(result);
       return;
     });

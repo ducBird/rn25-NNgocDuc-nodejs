@@ -1,103 +1,99 @@
 var express = require('express');
 var router = express.Router();
 
-let phoneRandom = () => {
-  return `0${Math.random().toString().substring(2, 11)}`;
-};
+const { default: mongoose } = require('mongoose');
+const { Supplier } = require('../models');
 
-let dataSuppliers = [
-  {
-    id: 1,
-    name: 'ABC company',
-    email: 'abccom@gmail.com',
-    phoneNumber: phoneRandom(),
-    address: 'Ha Noi',
-  },
-  {
-    id: 2,
-    name: 'DEF company',
-    email: 'defcom@gmail.com',
-    phoneNumber: phoneRandom(),
-    address: 'Binh Dinh',
-  },
-  {
-    id: 3,
-    name: 'GHI company',
-    email: 'ghicom@gmail.com',
-    phoneNumber: phoneRandom(),
-    address: 'Nghe An',
-  },
-  {
-    id: 4,
-    name: 'KLM company',
-    email: 'klmcom@gmail.com',
-    phoneNumber: phoneRandom(),
-    address: 'Long An',
-  },
-  {
-    id: 5,
-    name: 'NOP company',
-    email: 'nopcom@gmail.com',
-    phoneNumber: phoneRandom(),
-    address: 'Binh Duong',
-  },
-];
+mongoose.connect('mongodb://127.0.0.1:27017/BasicDBecommerce');
 
-/* GET data supplier. */
+/* GET data Suppliers. */
 router.get('/', function (req, res, next) {
-  res.send(dataSuppliers);
+  try {
+    Supplier.find().then((result) => {
+      res.send(result);
+    });
+  } catch (error) {
+    console.log(error);
+    res.sendStatus(500);
+  }
 });
 
-// GET data supplier
+// GET data Supplier
 router.get('/:id', function (req, res, next) {
   const getId = req.params.id;
   if (getId === 'search') {
     next();
     return;
   }
-  const foundSupplier = dataSuppliers.find((x) => x.id === parseInt(getId));
-  if (foundSupplier != null) {
-    res.send(foundSupplier);
-    return;
-  } else {
-    res.status(404).send({ message: 'Supplier not found!' });
+  try {
+    // const id = '636404585452ff76b963e61d';
+    const id = req.params.id;
+    Supplier.findById(id).then((result) => {
+      // console.log(result);
+      res.send(result);
+      return;
+    });
+  } catch (error) {
+    console.log(error);
+    res.sendStatus(500);
     return;
   }
 });
 
-// Search supplier
+// Search Supplier
 router.get('/search', (req, res, next) => {
-  const { id, name, address } = req.query;
-  console.log(id);
-  console.log(name);
-  console.log(address);
+  const { id, firstName, lastName } = req.query;
+  console.log(`id: ${id}`);
   res.send('OK query string');
 });
 
 //Insert Supplier
 router.post('/', (req, res, next) => {
-  const { id, name, email, address, phoneNumber } = req.body;
-  dataSuppliers.push({ id, name, email, address, phoneNumber });
-  res.status(201).send({ message: 'Interted success' });
+  try {
+    const data = req.body;
+    const newItem = new Supplier(data);
+    newItem.save().then((result) => {
+      res.send(result);
+      return;
+    });
+  } catch (err) {
+    console.log(err);
+    res.sendStatus(500);
+  }
 });
 
 //Update Supplier
 router.patch('/:id', (req, res, next) => {
-  const { id } = req.params;
-  const { name, email, phoneNumber, address } = req.body;
-  const foundSupplier = dataSuppliers.find((x) => x.id === parseInt(id));
-  foundSupplier.name = name;
-  foundSupplier.email = email;
-  foundSupplier.phoneNumber = phoneNumber;
-  foundSupplier.address = address;
-  res.send('OK patch');
+  try {
+    const id = req.params.id;
+    const data = req.body;
+    Supplier.findByIdAndUpdate(id, data, {
+      new: true,
+    }).then((result) => {
+      // console.log(result);
+      res.send(result);
+      return;
+    });
+  } catch (error) {
+    console.log(error);
+    res.sendStatus(500);
+    return;
+  }
 });
 
-//Remove supplier
+//Remove Supplier
 router.delete('/:id', (req, res, next) => {
-  const { id } = req.params;
-  dataSuppliers = dataSuppliers.filter((x) => x.id !== parseInt(id));
-  res.status(202).send({ message: 'Deleted success' });
+  try {
+    const { id } = req.params;
+    Supplier.findByIdAndDelete(id).then((result) => {
+      res.send(result);
+      return;
+    });
+  } catch (err) {
+    console.log(err);
+    res.sendStatus(500);
+    return;
+  }
 });
 
 module.exports = router;

@@ -6,34 +6,6 @@ const { Category } = require('../models');
 
 mongoose.connect('mongodb://127.0.0.1:27017/BasicDBecommerce');
 
-let dataCategories = [
-  {
-    id: 1,
-    name: 'Laptop',
-    description: 'Laptop',
-  },
-  {
-    id: 2,
-    name: 'SmartPhone',
-    description: 'Điện thoại thông minh',
-  },
-  {
-    id: 3,
-    name: 'GiaDung',
-    description: 'Đồ điện tử gia dụng',
-  },
-  {
-    id: 4,
-    name: 'SmartWatch',
-    description: 'Đồng hồ thông minh',
-  },
-  {
-    id: 5,
-    name: 'IPhone',
-    description: 'Điện thoại IPhone',
-  },
-];
-
 /* GET list dataCategories. */
 router.get('/', function (req, res, next) {
   try {

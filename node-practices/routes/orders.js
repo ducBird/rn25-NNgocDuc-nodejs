@@ -1,143 +1,98 @@
 var express = require('express');
 var router = express.Router();
 
-let dataOrders = [
-  {
-    id: 1,
-    createdDate: '1/1/1',
-    shippedDate: '1/2/1',
-    status: 'WAITING',
-    description: 'New order',
-    shippingAddress: 'Ha Noi',
-    paymentType: 'CASH',
-    customerID: 4,
-    employeeID: 1,
-  },
-  {
-    id: 2,
-    createdDate: '1/1/1',
-    shippedDate: '1/2/1',
-    status: 'COMPLETED',
-    description: 'New order',
-    shippingAddress: 'Ha Noi',
-    paymentType: 'CASH',
-    customerID: 2,
-    employeeID: 3,
-  },
-  {
-    id: 3,
-    createdDate: '1/1/1',
-    shippedDate: '1/2/1',
-    status: 'CANCELED',
-    description: 'New order',
-    shippingAddress: 'Ha Noi',
-    paymentType: 'CREDIT CARD',
-    customerID: 3,
-    employeeID: 1,
-  },
-  {
-    id: 4,
-    createdDate: '1/1/1',
-    shippedDate: '1/2/1',
-    status: 'WAITING',
-    description: 'New order',
-    shippingAddress: 'Ha Noi',
-    paymentType: 'CASH',
-    customerID: 3,
-    employeeID: 4,
-  },
-  {
-    id: 5,
-    createdDate: '1/1/1',
-    shippedDate: '1/2/1',
-    status: 'COMPLETED',
-    description: 'New order',
-    shippingAddress: 'Ha Noi',
-    paymentType: 'CREDIT CARD',
-    customerID: 5,
-    employeeID: 3,
-  },
-];
+const { default: mongoose } = require('mongoose');
+const { Order } = require('../models');
 
-/* GET data supplier. */
-router.get('/', (req, res, next) => {
-  res.send(dataOrders);
+mongoose.connect('mongodb://127.0.0.1:27017/BasicDBecommerce');
+
+/* GET data Orders. */
+router.get('/', function (req, res, next) {
+  try {
+    Order.find().then((result) => {
+      res.send(result);
+    });
+  } catch (error) {
+    console.log(error);
+    res.sendStatus(500);
+  }
 });
 
-const foundOrder = (xID) => {
-  return dataOrders.find((x) => x.id === parseInt(xID));
-};
-
-// GET data supplier
-router.get('/:id', (req, res, next) => {
-  const { id } = req.params;
-  if (id === 'search') {
+// GET data Order
+router.get('/:id', function (req, res, next) {
+  const getId = req.params.id;
+  if (getId === 'search') {
     next();
     return;
   }
-  if (foundOrder(id)) {
-    res.send(foundOrder(id));
-    return;
-  } else {
-    res.send({ message: 'Order not found' });
+  try {
+    // const id = '636404585452ff76b963e61d';
+    const id = req.params.id;
+    Order.findById(id).then((result) => {
+      // console.log(result);
+      res.send(result);
+      return;
+    });
+  } catch (error) {
+    console.log(error);
+    res.sendStatus(500);
     return;
   }
 });
 
-// Search order
+// Search Order
 router.get('/search', (req, res, next) => {
-  const { id, status } = req.query;
-  res.send(`id: ${id} \nstatus: ${status}`);
+  const { id, firstName, lastName } = req.query;
+  console.log(`id: ${id}`);
+  res.send('OK query string');
 });
 
-//Insert order
+//Insert Order
 router.post('/', (req, res, next) => {
-  const newOrder = req.body;
-  dataOrders.push(newOrder);
-  res.send({ message: 'Inserted success' });
+  try {
+    const data = req.body;
+    const newItem = new Order(data);
+    newItem.save().then((result) => {
+      res.send(result);
+      return;
+    });
+  } catch (err) {
+    console.log(err);
+    res.sendStatus(500);
+  }
 });
 
-//Update order
+//Update Order
 router.patch('/:id', (req, res, next) => {
-  const { id } = req.params;
-  const {
-    createdDate,
-    shippedDate,
-    status,
-    description,
-    shippingAddress,
-    paymentType,
-    customerID,
-    employeeID,
-  } = req.body;
-
-  const orderUpdate = foundOrder(id);
-  if (orderUpdate) {
-    orderUpdate.createdDate = createdDate;
-    orderUpdate.shippedDate = shippedDate;
-    orderUpdate.status = status;
-    orderUpdate.description = description;
-    orderUpdate.shippingAddress = shippingAddress;
-    orderUpdate.paymentType = paymentType;
-    orderUpdate.customerID = customerID;
-    orderUpdate.employeeID = employeeID;
-    res.send({ message: 'Updated success' });
-    return;
-  } else {
-    res.send({ message: 'Order you will update not found' });
+  try {
+    const id = req.params.id;
+    const data = req.body;
+    Order.findByIdAndUpdate(id, data, {
+      new: true,
+    }).then((result) => {
+      // console.log(result);
+      res.send(result);
+      return;
+    });
+  } catch (error) {
+    console.log(error);
+    res.sendStatus(500);
     return;
   }
 });
 
-//Remove order
+//Remove Order
 router.delete('/:id', (req, res, next) => {
-  const { id } = req.params;
-  if (foundOrder(id)) {
-    dataOrders = dataOrders.filter((x) => x.id !== parseInt(id));
-    res.status(202).send({ message: 'Deleted success' });
+  try {
+    const { id } = req.params;
+    Order.findByIdAndDelete(id).then((result) => {
+      res.send(result);
+      return;
+    });
+  } catch (err) {
+    console.log(err);
+    res.sendStatus(500);
     return;
-  } else {
-    res.status(401).send({ message: 'Deleted failed' });
   }
 });
 

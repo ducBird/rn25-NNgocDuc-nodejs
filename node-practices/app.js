@@ -10,6 +10,7 @@ var demoRouter = require('./routes/demo');
 var categoriesRouter = require('./routes/categories');
 var suppliersRouter = require('./routes/suppliers');
 var customersRouter = require('./routes/customers');
+var employeesRouter = require('./routes/employees');
 var productsRouter = require('./routes/products');
 var ordersRouter = require('./routes/orders');
 
@@ -31,6 +32,7 @@ app.use('/demo', demoRouter);
 app.use('/categories', categoriesRouter);
 app.use('/suppliers', suppliersRouter);
 app.use('/customers', customersRouter);
+app.use('/employees', employeesRouter);
 app.use('/products', productsRouter);
 app.use('/orders', ordersRouter);
 

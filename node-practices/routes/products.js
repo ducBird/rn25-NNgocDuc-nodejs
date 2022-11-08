@@ -1,121 +1,99 @@
 var express = require('express');
 var router = express.Router();
 
-let dataProducts = [
-  {
-    id: 1,
-    name: 'Table',
-    price: 100000,
-    discount: 20,
-    stock: 100,
-    categoryID: 1,
-    supplierID: 2,
-    description: 'Ghế công thái học',
-  },
-  {
-    id: 2,
-    name: 'SamSung Galaxy S8',
-    price: 200000,
-    discount: 20,
-    stock: 100,
-    categoryID: 3,
-    supplierID: 2,
-    description: 'Smart Phone Galaxy',
-  },
-  {
-    id: 3,
-    name: 'IPHONE 14 Pro',
-    price: 1900000,
-    discount: 2,
-    stock: 99,
-    categoryID: 2,
-    supplierID: 1,
-    description: 'IPhone 14 Pro 128GB',
-  },
-  {
-    id: 4,
-    name: 'OLEVS',
-    price: 1200000,
-    discount: 20,
-    stock: 13,
-    categoryID: 4,
-    supplierID: 5,
-    description: 'Đồng hồ olevs chính hãng',
-  },
-  {
-    id: 5,
-    name: 'AirPort',
-    price: 123000,
-    discount: 20,
-    stock: 100,
-    categoryID: 1,
-    supplierID: 5,
-    description: 'AirPort',
-  },
-];
+const { default: mongoose } = require('mongoose');
+const { Product } = require('../models');
 
-/* GET list dataProducts. */
+mongoose.connect('mongodb://127.0.0.1:27017/BasicDBecommerce');
+
+/* GET data Products. */
 router.get('/', function (req, res, next) {
-  res.send(dataProducts);
+  try {
+    Product.find().then((result) => {
+      res.send(result);
+    });
+  } catch (error) {
+    console.log(error);
+    res.sendStatus(500);
+  }
 });
 
-/* GET item at dataProducts. */
+// GET data Product
 router.get('/:id', function (req, res, next) {
-  if (req.params.id === 'search') {
+  const getId = req.params.id;
+  if (getId === 'search') {
     next();
     return;
   }
-  const getID = parseInt(req.params.id);
-  const found = dataProducts.find((x) => {
-    return x.id === getID;
-  });
-  if (found) {
-    res.send(found);
-    return;
-  } else {
-    res.status(404).send("Can't find product");
+  try {
+    // const id = '636404585452ff76b963e61d';
+    const id = req.params.id;
+    Product.findById(id).then((result) => {
+      // console.log(result);
+      res.send(result);
+      return;
+    });
+  } catch (error) {
+    console.log(error);
+    res.sendStatus(500);
     return;
   }
 });
 
-/* Search item dataProducts. */
-// router.get('/search/name', function (req, res, next) { hoặc như phía dưới nhưng phải kiểm tra điều kiện ở những url phía trên để tránh trùng lặp url chỗ 'next'
-router.get('/search', function (req, res, next) {
-  const { id, name } = req.query;
+// Search Product
+router.get('/search', (req, res, next) => {
+  const { id, firstName, lastName } = req.query;
   console.log(`id: ${id}`);
-  console.log(name);
-  res.send('Search Ok');
+  res.send('OK query string');
 });
 
-/* POST insert item at dataProducts. */
-router.post('/', function (req, res, next) {
-  const newCategory = req.body;
-  dataProducts.push(newCategory);
-  res.status(201).send({ message: 'Insert item category success' });
+//Insert Product
+router.post('/', (req, res, next) => {
+  try {
+    const data = req.body;
+    const newItem = new Product(data);
+    newItem.save().then((result) => {
+      res.send(result);
+      return;
+    });
+  } catch (err) {
+    console.log(err);
+    res.sendStatus(500);
+  }
 });
 
-/* PATCH updated item at dataProducts. */
+//Update Product
 router.patch('/:id', (req, res, next) => {
-  const { id } = req.params;
-  const { name, description } = req.body;
-
-  let found = dataProducts.find((x) => {
-    return (x.id = parseInt(id));
-  });
-
-  found.name = name;
-  found.description = description;
-
-  res.send({ message: 'Updated is success' });
+  try {
+    const id = req.params.id;
+    const data = req.body;
+    Product.findByIdAndUpdate(id, data, {
+      new: true,
+    }).then((result) => {
+      // console.log(result);
+      res.send(result);
+      return;
+    });
+  } catch (error) {
+    console.log(error);
+    res.sendStatus(500);
+    return;
+  }
 });
 
-/* DELETE remove item at dataProducts. */
-router.delete('/:id', function (req, res, next) {
-  const getID = req.params.id;
-  dataProducts = dataProducts.filter((x) => x.id !== parseInt(getID));
-
-  console.log(getID);
-  res.status(202).send({ message: 'Deleted success' });
+//Remove Product
+router.delete('/:id', (req, res, next) => {
+  try {
+    const { id } = req.params;
+    Product.findByIdAndDelete(id).then((result) => {
+      res.send(result);
+      return;
+    });
+  } catch (err) {
+    console.log(err);
+    res.sendStatus(500);
+    return;
+  }
 });
 
 module.exports = router;
