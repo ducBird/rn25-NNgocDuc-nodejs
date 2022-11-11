@@ -50,6 +50,14 @@ const employeeSchema = new Schema({
   },
 });
 
+// Virtuals
+employeeSchema.virtual('fullName').get(function () {
+  return this.firstName + ' ' + this.lastName;
+});
+
+employeeSchema.set('toJSON', { virtuals: true });
+employeeSchema.set('toObject', { virtuals: true });
+
 const Employee = model('Employee', employeeSchema);
 
 module.exports = Employee;

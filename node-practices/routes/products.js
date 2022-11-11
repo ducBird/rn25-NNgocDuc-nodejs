@@ -8,10 +8,22 @@ mongoose.connect('mongodb://127.0.0.1:27017/BasicDBecommerce');
 
 /* GET data Products. */
 router.get('/', function (req, res, next) {
+  // try {
+  //   Product.find().then((result) => {
+  //     res.send(result);
+  //   });
+  // } catch (error) {
+  //   console.log(error);
+  //   res.sendStatus(500);
+  // }
+
   try {
-    Product.find().then((result) => {
-      res.send(result);
-    });
+    Product.find()
+      .lean({ virtuals: true })
+      .populate('category')
+      .then((result) => {
+        res.send(result);
+      });
   } catch (error) {
     console.log(error);
     res.sendStatus(500);

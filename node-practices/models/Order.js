@@ -3,6 +3,28 @@ const { Schema, model } = mongoose;
 
 // Mongoose Datatypes:
 // https://mongoosejs.com/docs/schematypes.html
+
+// ========================Begin OrderDetail================================
+
+const orderDetailSchema = new Schema({
+  productId: { type: Schema.Types.ObjectId, ref: 'Product', required: true },
+  quantity: { type: Number, require: true, min: 0 },
+});
+// Virtual with Populate
+orderDetailSchema.virtual('product', {
+  ref: 'Product',
+  localField: 'productId',
+  foreignField: '_id',
+  justOne: true,
+});
+
+orderDetailSchema.set('toJSON', { virtuals: true });
+orderDetailSchema.set('toObject', { virtuals: true });
+
+// ========================End OrderDetail================================
+
+// ========================Begin Order================================
+
 const orderSchema = new Schema({
   createdDate: {
     type: Date,
@@ -69,7 +91,27 @@ const orderSchema = new Schema({
     ref: 'Employee',
     required: true,
   },
+  orderDetails: [orderDetailSchema],
 });
+// Virtual with Populate
+orderSchema.virtual('customer', {
+  ref: 'Customer',
+  localField: 'customerId',
+  foreignField: '_id',
+  justOne: true,
+});
+
+orderSchema.virtual('employee', {
+  ref: 'Employee',
+  localField: 'employeeId',
+  foreignField: '_id',
+  justOne: true,
+});
+
+orderSchema.set('toJSON', { virtuals: true });
+orderSchema.set('toObject', { virtuals: true });
+
+// ========================End Order================================
 
 const Order = model('Order', orderSchema);
 

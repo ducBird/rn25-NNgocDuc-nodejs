@@ -9,9 +9,13 @@ mongoose.connect('mongodb://127.0.0.1:27017/BasicDBecommerce');
 /* GET data Orders. */
 router.get('/', function (req, res, next) {
   try {
-    Order.find().then((result) => {
-      res.send(result);
-    });
+    Order.find()
+      .populate('orderDetails.product')
+      .populate('customer')
+      .populate('employee')
+      .then((result) => {
+        res.send(result);
+      });
   } catch (error) {
     console.log(error);
     res.sendStatus(500);
@@ -28,11 +32,15 @@ router.get('/:id', function (req, res, next) {
   try {
     // const id = '636404585452ff76b963e61d';
     const id = req.params.id;
-    Order.findById(id).then((result) => {
-      // console.log(result);
-      res.send(result);
-      return;
-    });
+    Order.findById(id)
+      .populate('orderDetails.product')
+      .populate('customer')
+      .populate('employee')
+      .then((result) => {
+        // console.log(result);
+        res.send(result);
+        return;
+      });
   } catch (error) {
     console.log(error);
     res.sendStatus(500);
