@@ -56,6 +56,12 @@ productSchema.virtual('category', {
   foreignField: '_id',
   justOne: true,
 });
+productSchema.virtual('supplier', {
+  ref: 'Supplier',
+  localField: 'supplierId',
+  foreignField: '_id',
+  justOne: true,
+});
 
 productSchema.set('toJSON', { virtuals: true });
 productSchema.set('toObject', { virtuals: true });

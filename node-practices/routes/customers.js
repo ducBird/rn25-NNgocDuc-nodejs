@@ -4,7 +4,13 @@ var router = express.Router();
 const { default: mongoose } = require('mongoose');
 const { Customer } = require('../models');
 
+//MONGOOSE
 mongoose.connect('mongodb://127.0.0.1:27017/BasicDBecommerce');
+
+//MONGODB
+const { findDocuments } = require('../helpers/MongoDbHelper');
+
+//============================BEGIN MONGOOSE============================//
 
 /* GET data Customers. */
 router.get('/', function (req, res, next) {
@@ -95,5 +101,50 @@ router.delete('/:id', (req, res, next) => {
     return;
   }
 });
+
+//============================END MONGOOSE============================//
+
+//============================BEGIN MONGODB============================//
+/**
+ * import query mongodb
+ * const { ...methods } = require('../helpers/MongoDbHelper');
+ */
+
+//QUETIONS 4-----------------------------
+//Hiển thị tất cả các khách hàng có địa chỉ ở Quận Hải Châu
+router.get('/questions/4', async (req, res, next) => {
+  try {
+    const text = 'Hải Châu';
+    let query = { address: new RegExp(`${text}`) };
+    const results = await findDocuments({ query: query }, 'customers');
+    res.json({ ok: true, results });
+  } catch (error) {
+    res.status(500).json(error);
+  }
+
+  // const text = 'Hải Châu';
+  // let query = { address: new RegExp(`${text}`) };
+  // findDocuments({ query: query }, 'customers')
+  //   .then((results) => {
+  //     res.json(results);
+  //   })
+  //   .catch((err) => {
+  //     res.status(500).json(err);
+  //   });
+});
+
+//QUETIONS 5-----------------------------
+//Hiển thị tất cả các khách hàng có năm sinh 1990
+router.get('/questions/5', async (req, res, next) => {
+  try {
+    let query = { address: new RegExp(`${text}`) };
+    const results = await findDocuments({ query: query }, 'customers');
+    res.json({ ok: true, results });
+  } catch (error) {
+    res.status(500).json(error);
+  }
+});
+
+//============================END MONGODB============================//
 
 module.exports = router;

@@ -2,11 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { axiosClient } from '../../libraries/axiosClient';
 import { Table, Button, Popconfirm, Form, Input, Modal, message } from 'antd';
 import { AiFillEdit, AiFillDelete } from 'react-icons/ai';
-import './employees.css';
+import './customers.css';
 import moment from 'moment';
 
-function ListEmployees() {
-  const [employees, setEmployees] = useState([]);
+function Customers() {
+  const [customers, setCustomers] = useState([]);
   const [refresh, setRefresh] = useState(0);
   const [editFormVisible, setEditFormVisible] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState(null);
@@ -14,8 +14,8 @@ function ListEmployees() {
   const columns = [
     {
       title: 'Full Name',
-      dataIndex: 'fullName',
-      key: 'fullName',
+      dataIndex: 'lastName',
+      key: 'lastName',
     },
     {
       title: 'Email',
@@ -64,7 +64,7 @@ function ListEmployees() {
               onConfirm={() => {
                 const id = record._id;
                 axiosClient
-                  .delete('/employees/' + id)
+                  .delete('/customers/' + id)
                   .then((response) => {
                     message.success('Deleted Successfully');
                     setRefresh((f) => f + 1);
@@ -88,14 +88,14 @@ function ListEmployees() {
   ];
 
   useEffect(() => {
-    axiosClient.get('/employees').then((response) => {
-      setEmployees(response.data);
+    axiosClient.get('/customers').then((response) => {
+      setCustomers(response.data);
     });
   }, [refresh]);
 
   const onFinish = (values) => {
     axiosClient
-      .post('/employees', values)
+      .post('/customers', values)
       .then((response) => {
         message.success('Successfully Added');
         createForm.resetFields(); //reset input form
@@ -111,7 +111,7 @@ function ListEmployees() {
   };
   const onUpdateFinish = (values) => {
     axiosClient
-      .patch('/employees/' + selectedRecord._id, values)
+      .patch('/customers/' + selectedRecord._id, values)
       .then((response) => {
         message.success('Successfully Updated!');
         updateForm.resetFields();
@@ -213,12 +213,12 @@ function ListEmployees() {
           </Button>
         </Form.Item>
       </Form>
-      <Table rowKey="_id" dataSource={employees} columns={columns} />
+      <Table rowKey="_id" dataSource={customers} columns={columns} />
 
       <Modal
         centered
         open={editFormVisible}
-        title="Update Employee"
+        title="Update Customer"
         onOk={() => {
           updateForm.submit();
         }}
@@ -312,4 +312,4 @@ function ListEmployees() {
   );
 }
 
-export default ListEmployees;
+export default Customers;

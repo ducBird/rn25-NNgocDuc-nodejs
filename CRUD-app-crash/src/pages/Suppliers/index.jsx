@@ -2,20 +2,20 @@ import React, { useEffect, useState } from 'react';
 import { axiosClient } from '../../libraries/axiosClient';
 import { Table, Button, Popconfirm, Form, Input, Modal, message } from 'antd';
 import { AiFillEdit, AiFillDelete } from 'react-icons/ai';
-import './employees.css';
+import './suppliers.css';
 import moment from 'moment';
 
-function ListEmployees() {
-  const [employees, setEmployees] = useState([]);
+function Suppliers() {
+  const [suppliers, setSuppliers] = useState([]);
   const [refresh, setRefresh] = useState(0);
   const [editFormVisible, setEditFormVisible] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState(null);
 
   const columns = [
     {
-      title: 'Full Name',
-      dataIndex: 'fullName',
-      key: 'fullName',
+      title: 'Name',
+      dataIndex: 'name',
+      key: 'name',
     },
     {
       title: 'Email',
@@ -31,14 +31,6 @@ function ListEmployees() {
       title: 'Address',
       dataIndex: 'address',
       key: 'address',
-    },
-    {
-      title: 'Birthday',
-      dataIndex: 'birthDay',
-      key: 'birthDay',
-      render: (text) => {
-        return <span>{moment(text).format('DD/MM/yyyy')}</span>;
-      },
     },
     {
       title: 'Actions',
@@ -64,7 +56,7 @@ function ListEmployees() {
               onConfirm={() => {
                 const id = record._id;
                 axiosClient
-                  .delete('/employees/' + id)
+                  .delete('/suppliers/' + id)
                   .then((response) => {
                     message.success('Deleted Successfully');
                     setRefresh((f) => f + 1);
@@ -88,14 +80,14 @@ function ListEmployees() {
   ];
 
   useEffect(() => {
-    axiosClient.get('/employees').then((response) => {
-      setEmployees(response.data);
+    axiosClient.get('/suppliers').then((response) => {
+      setSuppliers(response.data);
     });
   }, [refresh]);
 
   const onFinish = (values) => {
     axiosClient
-      .post('/employees', values)
+      .post('/suppliers', values)
       .then((response) => {
         message.success('Successfully Added');
         createForm.resetFields(); //reset input form
@@ -111,7 +103,7 @@ function ListEmployees() {
   };
   const onUpdateFinish = (values) => {
     axiosClient
-      .patch('/employees/' + selectedRecord._id, values)
+      .patch('/suppliers/' + selectedRecord._id, values)
       .then((response) => {
         message.success('Successfully Updated!');
         updateForm.resetFields();
@@ -141,24 +133,13 @@ function ListEmployees() {
         onFinishFailed={onFinishFailed}
         autoComplete="off"
       >
-        {/* FirstName */}
+        {/* Name */}
         <Form.Item
           hasFeedback
           className=""
-          label="Fisrt Name"
-          name="firstName"
+          label="Name"
+          name="name"
           rules={[{ required: true, message: 'Please input your first name!' }]}
-        >
-          <Input />
-        </Form.Item>
-
-        {/* LastName */}
-        <Form.Item
-          hasFeedback
-          className=""
-          label="Last Name"
-          name="lastName"
-          rules={[{ required: true, message: 'Please input your last name!' }]}
         >
           <Input />
         </Form.Item>
@@ -201,11 +182,6 @@ function ListEmployees() {
           <Input />
         </Form.Item>
 
-        {/* BirthDay */}
-        <Form.Item hasFeedback className="" label="Birthday" name="birthDay">
-          <Input />
-        </Form.Item>
-
         {/* Button Save */}
         <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
           <Button type="primary" htmlType="submit">
@@ -213,12 +189,12 @@ function ListEmployees() {
           </Button>
         </Form.Item>
       </Form>
-      <Table rowKey="_id" dataSource={employees} columns={columns} />
+      <Table rowKey="_id" dataSource={suppliers} columns={columns} />
 
       <Modal
         centered
         open={editFormVisible}
-        title="Update Employee"
+        title="Update Supplier"
         onOk={() => {
           updateForm.submit();
         }}
@@ -242,24 +218,9 @@ function ListEmployees() {
           <Form.Item
             hasFeedback
             className=""
-            label="Fisrt Name"
-            name="firstName"
-            rules={[
-              { required: true, message: 'Please input your first name!' },
-            ]}
-          >
-            <Input />
-          </Form.Item>
-
-          {/* LastName */}
-          <Form.Item
-            hasFeedback
-            className=""
-            label="Last Name"
-            name="lastName"
-            rules={[
-              { required: true, message: 'Please input your last name!' },
-            ]}
+            label="Name"
+            name="name"
+            rules={[{ required: true, message: 'Please input supplier name!' }]}
           >
             <Input />
           </Form.Item>
@@ -271,7 +232,7 @@ function ListEmployees() {
             label="Email"
             name="email"
             rules={[
-              { required: true, message: 'Please input your email!' },
+              { required: true, message: 'Please input supplier email!' },
               { type: 'email', message: `Invalid Email` },
             ]}
           >
@@ -285,7 +246,10 @@ function ListEmployees() {
             label="Phone Number"
             name="phoneNumber"
             rules={[
-              { required: true, message: 'Please input your phone number!' },
+              {
+                required: true,
+                message: 'Please input supplier phone number!',
+              },
             ]}
           >
             <Input />
@@ -297,13 +261,10 @@ function ListEmployees() {
             className=""
             label="Address"
             name="address"
-            rules={[{ required: true, message: 'Please input your address!' }]}
+            rules={[
+              { required: true, message: 'Please input supplier address!' },
+            ]}
           >
-            <Input />
-          </Form.Item>
-
-          {/* BirthDay */}
-          <Form.Item hasFeedback className="" label="Birthday" name="birthDay">
             <Input />
           </Form.Item>
         </Form>
@@ -312,4 +273,4 @@ function ListEmployees() {
   );
 }
 
-export default ListEmployees;
+export default Suppliers;

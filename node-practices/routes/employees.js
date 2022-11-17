@@ -4,7 +4,13 @@ var router = express.Router();
 const { default: mongoose } = require('mongoose');
 const { Employee } = require('../models');
 
+//MONGOOSE
 mongoose.connect('mongodb://127.0.0.1:27017/BasicDBecommerce');
+
+//MONGODB
+const { findDocuments } = require('../helpers/MongoDbHelper');
+
+//============================BEGIN MONGOOSE============================//
 
 /* GET data Employees. */
 router.get('/', function (req, res, next) {
@@ -95,5 +101,17 @@ router.delete('/:id', (req, res, next) => {
     return;
   }
 });
+
+//============================END MONGOOSE============================//
+
+//============================BEGIN MONGODB============================//
+/**
+ * import query mongodb
+ * const { ...methods } = require('../helpers/MongoDbHelper');
+ */
+
+//QUETIONS 4-----------------------------
+
+//============================END MONGODB============================//
 
 module.exports = router;

@@ -1,0 +1,15 @@
+.li-nav a {
+  color: white;
+}
+
+.li-nav {
+  transition: all 0.2s ease-in;
+}
+.li-nav:hover {
+  background-color: #fff;
+  color: #005745;
+}
+
+.li-nav a:hover {
+  color: #005745;
+}

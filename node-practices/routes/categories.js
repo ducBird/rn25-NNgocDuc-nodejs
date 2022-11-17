@@ -4,15 +4,23 @@ var router = express.Router();
 const { default: mongoose } = require('mongoose');
 const { Category } = require('../models');
 
+//MONGOOSE
 mongoose.connect('mongodb://127.0.0.1:27017/BasicDBecommerce');
+
+//MONGODB
+const { findDocuments } = require('../helpers/MongoDbHelper');
+
+//============================BEGIN MONGOOSE============================//
 
 /* GET list dataCategories. */
 router.get('/', function (req, res, next) {
   try {
-    Category.find().then((result) => {
-      res.send(result);
-      // console.log(result);
-    });
+    Category.find()
+      .sort({ name: 1 })
+      .then((result) => {
+        res.send(result);
+        // console.log(result);
+      });
   } catch (error) {
     // console.log(error);
     res.sendStatus(500);
@@ -90,5 +98,17 @@ router.delete('/:id', function (req, res, next) {
     res.sendStatus(500);
   }
 });
+
+//============================END MONGOOSE============================//
+
+//============================BEGIN MONGODB============================//
+/**
+ * import query mongodb
+ * const { ...methods } = require('../helpers/MongoDbHelper');
+ */
+
+//QUETIONS 4-----------------------------
+
+//============================END MONGODB============================//
 
 module.exports = router;
