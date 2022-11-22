@@ -137,12 +137,40 @@ router.get('/questions/4', async (req, res, next) => {
 //Hiển thị tất cả các khách hàng có năm sinh 1990
 router.get('/questions/5', async (req, res, next) => {
   try {
-    let query = { address: new RegExp(`${text}`) };
+    let query = {
+      $expr: { $eq: [{ $year: '$birthDay' }, 2001] },
+    };
     const results = await findDocuments({ query: query }, 'customers');
     res.json({ ok: true, results });
   } catch (error) {
     res.status(500).json(error);
   }
+});
+
+//QUETIONS 6-----------------------------
+//Hiển thị tất cả các khách hàng có sinh nhật là hôm nay
+router.get('/questions/6', (req, res, next) => {
+  const toDay = new Date();
+  const dayBirthDay = {
+    $eq: [{ $dayOfMonth: '$birthDay' }, { $dayOfMonth: toDay }],
+  };
+  const monthBirthday = {
+    $eq: [{ $month: '$birthDay' }, { $month: toDay }],
+  };
+  let query = {
+    $expr: {
+      $and: [dayBirthDay, monthBirthday],
+    },
+  };
+  findDocuments({ query: query }, 'customers')
+    .then((result) => {
+      res.json(result);
+      return;
+    })
+    .catch((err) => {
+      res.status(500).json(err);
+      return;
+    });
 });
 
 //============================END MONGODB============================//

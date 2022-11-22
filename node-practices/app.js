@@ -15,6 +15,10 @@ var employeesRouter = require('./routes/employees');
 var productsRouter = require('./routes/products');
 var ordersRouter = require('./routes/orders');
 
+/* Router Upload Image */
+var uploadImgCategoriesRouter = require('./routes/uploadImage/ImgCategories');
+var uploadImgCategoriesRouter = require('./routes/uploadImage/ImgProducts');
+
 var app = express();
 
 // view engine setup
@@ -42,6 +46,10 @@ app.use('/customers', customersRouter);
 app.use('/employees', employeesRouter);
 app.use('/products', productsRouter);
 app.use('/orders', ordersRouter);
+
+/* Router Upload Image */
+app.use('/uploadsCategories', uploadImgCategoriesRouter);
+app.use('/uploads-products', uploadImgCategoriesRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

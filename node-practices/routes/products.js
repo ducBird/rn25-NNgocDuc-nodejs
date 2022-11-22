@@ -161,6 +161,7 @@ router.get('/questions/1', async (req, res, next) => {
 // Hiển thị tất cả các mặt hàng có tồn kho <= 5
 router.get('/questions/search', async (req, res, next) => {
   const { stock } = req.query;
+  console.log(stock);
   try {
     let query = { stock: { $lte: stock } };
     const results = await findDocuments({ query: query }, 'products');
