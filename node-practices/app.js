@@ -5,9 +5,20 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 const cors = require('cors');
 
+// Import JWT vs Passport
+const passport = require('passport');
+
+// var BasicStrategy = require('passport-http').BasicStrategy;
+
+const JwtStrategy = require('passport-jwt').Strategy;
+const ExtractJwt = require('passport-jwt').ExtractJwt;
+const jwtSettings = require('./constants/jwtSettings');
+// ----------------------------------------------- //
+
 var indexRouter = require('./routes/index');
 // var usersRouter = require('./routes/users');
 var demoRouter = require('./routes/demo');
+var authRouter = require('./routes/auth');
 var categoriesRouter = require('./routes/categories');
 var suppliersRouter = require('./routes/suppliers');
 var customersRouter = require('./routes/customers');
@@ -18,6 +29,7 @@ var ordersRouter = require('./routes/orders');
 /* Router Upload Image */
 var uploadImgCategoriesRouter = require('./routes/uploadImage/ImgCategories');
 var uploadImgCategoriesRouter = require('./routes/uploadImage/ImgProducts');
+const { findDocument } = require('./helpers/MongoDbHelper');
 
 var app = express();
 
@@ -37,9 +49,36 @@ app.use(
   })
 );
 
+// Passport: jwt
+const opts = {};
+opts.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
+opts.secretOrKey = jwtSettings.SECRET;
+opts.audience = jwtSettings.AUDIENCE;
+opts.issuer = jwtSettings.ISSUER;
+
+passport.use(
+  new JwtStrategy(opts, async function (payload, done) {
+    const id = payload.sub;
+    // console.log(payload);
+    const found = await findDocument(id, 'login');
+    // console.log(found);
+    if (found && found.active) {
+      //kiểm tra active trong DB true hay false
+      let error = null;
+      let user = true;
+      return done(error, user);
+    } else {
+      let error = null;
+      let user = false;
+      return done(error, user);
+    }
+  })
+);
+
 app.use('/', indexRouter);
 // app.use('/users', usersRouter);
 app.use('/demo', demoRouter);
+app.use('/auth', authRouter);
 app.use('/categories', categoriesRouter);
 app.use('/suppliers', suppliersRouter);
 app.use('/customers', customersRouter);

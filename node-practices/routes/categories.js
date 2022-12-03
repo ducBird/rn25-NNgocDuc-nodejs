@@ -9,6 +9,7 @@ mongoose.connect('mongodb://127.0.0.1:27017/BasicDBecommerce');
 
 //MONGODB
 const { findDocuments } = require('../helpers/MongoDbHelper');
+const passport = require('passport');
 
 //============================BEGIN MONGOOSE============================//
 
@@ -55,19 +56,23 @@ router.get('/search', function (req, res, next) {
 });
 
 /* POST insert item at dataCategories. */
-router.post('/', function (req, res, next) {
-  try {
-    const data = req.body;
-    const newItem = new Category(data);
-    newItem.save().then((result) => {
-      // console.log(result);
-      res.send(result);
-    });
-  } catch (err) {
-    console.log(err);
-    res.sendStatus(500);
+router.post(
+  '/',
+  passport.authenticate('jwt', { session: false }),
+  function (req, res, next) {
+    try {
+      const data = req.body;
+      const newItem = new Category(data);
+      newItem.save().then((result) => {
+        // console.log(result);
+        res.send(result);
+      });
+    } catch (err) {
+      console.log(err);
+      res.sendStatus(500);
+    }
   }
-});
+);
 
 /* PATCH updated item at dataCategories. */
 router.patch('/:id', (req, res, next) => {

@@ -10,7 +10,13 @@ import {
   message,
   Upload,
 } from 'antd';
-import { AiFillEdit, AiFillDelete, AiOutlineUpload } from 'react-icons/ai';
+import {
+  AiFillEdit,
+  AiFillDelete,
+  AiOutlineUpload,
+  AiOutlinePlus,
+  AiOutlineLoading,
+} from 'react-icons/ai';
 import './categories.css';
 import moment from 'moment';
 import TextArea from 'antd/lib/input/TextArea';
@@ -152,7 +158,7 @@ function Categories() {
         setRefresh((f) => f + 1);
       })
       .catch((err) => {
-        message.error('Deleted Failed!');
+        message.error('Added Failed!');
         console.log(err);
       });
     console.log('👌👌👌', values);
@@ -215,6 +221,37 @@ function Categories() {
         >
           <TextArea rows={5} />
         </Form.Item>
+
+        {/* ImageUrl */}
+        <Form.Item
+          hasFeedback
+          className=""
+          label="Cover Image"
+          name="imageUrl"
+          valuePropName=""
+        >
+          <Upload
+            showUploadList={false}
+            listType="picture-card"
+            name="file"
+            action={'http://localhost:9000/uploadsCategories/categories/'}
+            onChange={(info) => {
+              if (info.file.status !== 'uploading') {
+                console.log(info.file, info.fileList);
+              }
+
+              if (info.file.status === 'done') {
+                message.success(`${info.file.name} file uploaded successfully`);
+                setRefresh((f) => f + 1);
+              } else if (info.file.status === 'error') {
+                message.error(`${info.file.name} file upload failed.`);
+              }
+            }}
+          >
+            <AiOutlinePlus size={'20px'} />
+          </Upload>
+        </Form.Item>
+
         <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
           <Button type="primary" htmlType="submit">
             Save

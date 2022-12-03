@@ -5,6 +5,7 @@ const { Schema, model } = mongoose;
 // https://mongoosejs.com/docs/schematypes.html
 const categorySchema = new Schema({
   name: { type: String, required: [true, 'Category bắt buộc phải nhập'] },
+  imageUrl: String,
   description: String,
 });
 

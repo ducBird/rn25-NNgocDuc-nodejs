@@ -123,7 +123,7 @@ function Suppliers() {
   const [updateForm] = Form.useForm();
   return (
     <>
-      <h1 className="text-center p-2 mb-5 text-xl">🏬 Customer 🏬</h1>
+      <h1 className="text-center p-2 mb-5 text-xl">🏬 Suppliers 🏬</h1>
       <Form
         form={createForm}
         name="create-form"
